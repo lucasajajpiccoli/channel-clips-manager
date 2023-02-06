@@ -1,0 +1,12 @@
+# dependencies
+/*/node_modules
+
+# testing
+/back-end/coverage
+
+# production
+/front-end/build
+/back-end/dist
+
+# misc
+/*/.env

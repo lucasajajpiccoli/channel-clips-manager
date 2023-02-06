@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model channels {
+  id                Int      @id @default(autoincrement())
+  youtubeChannelId  String   @unique
+  uploadsPlaylistId String   @unique
+  title             String   @db.VarChar(255)
+  customUrl         String   @unique @db.VarChar(255)
+  thumbnailUrl      String
+  userId            Int?
+  users             users?   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  videos            videos[]
+}
+
+model sessions {
+  id           Int     @id @default(autoincrement())
+  token        String
+  refreshToken String?
+  userId       Int?
+  users        users?  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  id       Int        @id @default(autoincrement())
+  email    String     @unique @db.VarChar(255)
+  channels channels[]
+  sessions sessions[]
+}
+
+model videos {
+  id              Int            @id @default(autoincrement())
+  youtubeVideoId  String         @unique
+  title           String         @db.VarChar(100)
+  description     String
+  durationSeconds Int
+  uploadTime      DateTime       @db.Time(6)
+  scheduleTime    DateTime?      @db.Time(6)
+  privacyStatus   privacy_status
+  channelId       Int?
+  channels        channels?      @relation(fields: [channelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+enum privacy_status {
+  private
+  public
+  unlisted
+}
